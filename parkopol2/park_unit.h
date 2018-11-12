@@ -3,6 +3,8 @@ using namespace std;
 #include <vector>
 #include <iostream>
 
+
+
 class park_unit
 {
 private:
@@ -12,7 +14,9 @@ private:
 	int m_depthLevel;
 
 	string m_unitname;
-	int m_childId;
+	unsigned long long m_childID;
+	int takenPlacesCounter;
+	int totalPlaces;
 
 
 public:
@@ -24,7 +28,11 @@ public:
 
 	void printID();
 	void addChildUnit();
-	void removeChildUnit(int childID);
+	void removeChildren();
+	void removeChildUnit(); ///TBD!!
+
+	void removeChildUnit(int childID); ///TBD!!
+	void placeTaken(); ///TBD!!
+	void placeFreed(); ///TBD!!
 	park_unit* getChild(int i);
 };
-

@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="parkopol.h" />
     <ClInclude Include="park_unit.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
