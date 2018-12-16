@@ -26,7 +26,8 @@ park_unit::~park_unit()
 	}
 	else
 	{
-		cout << endl << "m_children bylo puste\n";
+		printID();
+		cout << "\t\t-> has no children, deleting\n";
 	}
 	m_children.clear();
 }
@@ -42,8 +43,7 @@ void park_unit::addChildUnit()
 		m_children.push_back(new park_unit(this)); 
 		m_children.back()->m_childID = m_children.size();
 		printID();
-		
-		cout << " \t\t-> Adding new child no.  ";
+		cout << "\t\t-> Adding new child no.  ";
 		m_children.back()->printID();
 		cout << endl;
 }
