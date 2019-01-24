@@ -151,12 +151,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="car.h" />
     <ClInclude Include="entry_ticket.h" />
     <ClInclude Include="parkopol.h" />
     <ClInclude Include="park_unit.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RunInstance.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="car.cpp" />
     <ClCompile Include="entry_ticket.cpp" />
     <ClCompile Include="parkopol.cpp" />
     <ClCompile Include="park_unit.cpp" />
@@ -166,6 +169,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RunInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
