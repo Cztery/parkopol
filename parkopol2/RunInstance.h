@@ -8,11 +8,12 @@ class RunInstance
 private:
 	park_unit parkingStructureRoot;
 	map<string, car> carMap;
-
+	float m_pricePerMin;
 public:
 	RunInstance();
 	~RunInstance();
-	car* getTicket();
+	car* getTicket(string plateID);
 	void start();
+	void clientMenu();
 };
 

@@ -17,33 +17,33 @@ park_unit::park_unit(park_unit *parent)
 	if (parent) m_depthLevel = parent->m_depthLevel + 1;
 	else m_depthLevel = 0;	//default: 0 is parking tree root, max num is parking tree leaf/parking place
 	m_parent = parent;		//if pointer to parent is given (overload)
-}
-
-park_unit::park_unit(park_unit * parent, vector<tuple<unsigned int, string>> nameAndAmount)
-{
-	vector<tuple<unsigned int, string>> newNameAndAmount(nameAndAmount.begin()+1,nameAndAmount.end());
-	for (unsigned int i = 0; i < std::get<0>(nameAndAmount[0]); i++)
+	if (m_depthLevel == unitNames.size() - 1)
 	{
-		if (nameAndAmount.begin() != nameAndAmount.end())
-			addChildren(newNameAndAmount);
-		
+		countFree(1);
+		countTotal(1);
 	}
 }
 
+
 park_unit::~park_unit()
 {
+	if (m_depthLevel == unitNames.size() - 1)
+	{
+		countTotal(-1);
+		if (!m_isTaken) countFree(-1);
+	}
 	if (m_children.empty())
 	{
-		logID();
-		clog << "\t\t-> m_children vector is empty\n";
+		printID();
+		cout << "\t\t-> m_children vector is empty\n";
 	}
 	else
 	{
 		for (auto &i : m_children)
 		{
-			logID();
+			printID();
 			cout << endl << "\t\t-> deleting child no. ";
-			i->logID();
+			i->printID();
 			cout << endl;
 			delete i;
 		}
@@ -51,11 +51,25 @@ park_unit::~park_unit()
 	m_children.clear();
 }
 
+void park_unit::countFree(int change = 1)
+{
+	m_freePlacesCounter += change;
+	if (m_parent) m_parent->countFree(change);
+}
+
+
+void park_unit::countTotal(int change=1)
+{
+	totalPlaces += change;
+	if (m_parent) m_parent->countTotal(change);
+}
+
 void park_unit::menu()
 {
-	cout << "\tPARKOPOL 1.0 " << "\nParking scheme initialization:"
+
+	cout << "\n\tPARKOPOL 1.0 " << "\nParking scheme initialization:"
 		<< "\n1. Load from file"
-		<< "\n2. Build parking structure manually";
+		<< "\n2. Build parking structure manually\n";
 	int choice;
 	cin >> choice;
 	switch (choice)
@@ -64,12 +78,13 @@ void park_unit::menu()
 		loadStructure();
 		break;
 	case 2:
+		system("cls");
 		declareParkStructure();
 		break;
 	case 0:
 		return;
 	default:
-		cout << "\n Incorrect choice, try again";
+		cout << "\n Incorrect choice, try again\n";
 		break;
 	}
 
@@ -79,42 +94,21 @@ void park_unit::loadStructure()
 {
 }
 
-void park_unit::logID()
+void park_unit::printID()
 {
-	if (m_parent) m_parent->logID();
-	clog << m_childID << ".";
+	if (m_parent) m_parent->printID();
+	cout << m_childID << ".";
 }
-//park_unit* park_unit::findFreePlace(size_t iter)
-//{
-//	park_unit* freePlace = NULL;
-//	if (m_depthLevel == unitNames.size() - 1 && iter == m_childID)
-//	{
-//		freePlace = m_parent->findFreePlace(m_childID + 1);
-//	}
-//	else if (m_depthLevel == unitNames.size() - 1)
-//	{
-//		if (isTaken)
-//			return NULL;
-//		else
-//			return this;
-//	}
-//	else if (m_depthLevel < unitNames.size() - 1)
-//	{
-//		for (size_t i = iter; i < m_children.size(); i++)
-//		{
-//			freePlace = m_children[i]->findFreePlace();
-//			if (freePlace) return freePlace;
-//		}
-//		
-//	}
-//	else
-//		freePlace = m_parent->findFreePlace(m_childID);
-//		
-//		return nullptr;
-//}
+
+void park_unit::printLocation()
+{
+	if (m_parent) m_parent->printLocation();
+	cout << unitNames[m_depthLevel]<< ":\t"<< m_childID << endl;
+}
+
 park_unit* park_unit::findFreePlace(size_t iter = 0)
 {
-	logID();
+	printID();
 	cout << "\t\t-> running find function\n";
 	park_unit* freePlace = NULL;
 	if (m_depthLevel == unitNames.size() - 2)
@@ -122,7 +116,7 @@ park_unit* park_unit::findFreePlace(size_t iter = 0)
 		for (size_t i = iter; i < m_children.size(); i++)
 		{
 			freePlace = m_children[i];
-			if (freePlace) return freePlace;
+			if (freePlace && !(freePlace->isTaken())) return freePlace;
 		}
 		return NULL;
 	}
@@ -146,56 +140,26 @@ park_unit* park_unit::findFreePlace(size_t iter = 0)
 	return freePlace;
 }
 
-//park_unit* park_unit::findFreePlace(size_t iter = 0)
-//
-//{
-//	park_unit* freePlace = NULL;
-//	//search can be started at any place in the structure, default is first child
-//
-//	if (m_depthLevel == unitNames.size() - 1)
-//	{
-//		if (isTaken)
-//			return NULL;
-//		else
-//			return this;
-//	}
-//	else if (m_depthLevel < unitNames.size() - 1)
-//	{
-//		for (size_t i = iter + 1; i < m_children.size(); i++)
-//		{
-//			freePlace = m_children[i]->findFreePlace();
-//			if (freePlace) return freePlace;
-//		}
-//		if (!freePlace)
-//		{
-//			if (m_parent == NULL)
-//				return NULL;
-//			else
-//				m_parent->findFreePlace(m_childID);
-//		}
-//	}
-//	else
-//		return NULL;
-//
-//		if (m_depthLevel == unitNames.size() - 1 && iter)
-//		{
-//			if (isTaken)
-//				return NULL;
-//			else
-//				return this;
-//		}
-//		else if (m_depthLevel < unitNames.size() - 1)
-//		{
-//			for (auto i = iter + 1; i < m_children.size(); i++)
-//			{
-//				freePlace = m_children[iter]->findFreePlace();
-//				if (freePlace) return freePlace;
-//			}
-//		}
-//		else
-//			m_parent->findFreePlace();
-//	return nullptr;
-//}
+park_unit * park_unit::findCarLocation(string plates)
+{
+	
+	park_unit * location = nullptr;
+	if (m_parkedCar && m_parkedCar->getPlates() == plates)
+	{
+		return this;
+	}
+	else if (totalPlaces - m_freePlacesCounter > 0)
+	{
+		for (size_t i = 0; i < m_children.size(); i++)
+		{
+			location = m_children[i]->findCarLocation(plates);
+			if (location) return location;
+		}
+	}
+	else return nullptr;
+	
+}
+
 void park_unit::declareParkStructure()
 {
 	
@@ -207,9 +171,9 @@ void park_unit::declareParkStructure()
 		cout << "\tPARKOPOL 1.0 " << "\nParking scheme building:";
 		cout << "\n1. Add new level"
 			 << "\n2. Finish creating structure"
-			 << "\n0. Cancel and discard changes";
+			 << "\n0. Cancel and discard changes\n";
 		cin >> choice;
-	
+		system("cls");
 		switch (choice)
 		{
 		case 1:
@@ -223,6 +187,9 @@ void park_unit::declareParkStructure()
 		case 2:
 			cout << "\n Finished declararation of tree structure, run buildParkStructure():\n";
 			buildParkStructure();
+
+			cin.get(); cin.get();
+			system("cls");
 			break;
 		case 0:
 			return;
@@ -247,30 +214,19 @@ void park_unit::buildParkStructure()
 void park_unit::addChildUnit()
 {
 	m_children.push_back(new park_unit(this)); 
+	
+
 	m_children.back()->m_childID = static_cast<unsigned int>(m_children.size());
-	logID();
-	clog << " \t\t-> Adding new child "<< unitNames[m_depthLevel+1]<<" no.  ";
-	m_children.back()->logID();
-	clog << endl;
+	printID();
+	cout << " \t\t-> Adding new child "<< unitNames[m_depthLevel+1]<<" no.  ";
+	m_children.back()->printID();
+	cout << endl;
 }
 
-void park_unit::addChildren(vector<tuple<unsigned int, string>> nameAndAmount)
-{
-	vector<tuple<unsigned int, string>> newNameAndAmount(nameAndAmount.begin(), nameAndAmount.end()); //creating subvector of names and numbers for organizational subunits of parking system
-	for (auto a : nameAndAmount)
-	{
-		m_children.push_back(new park_unit(this, newNameAndAmount));
-		m_children.back()->m_childID = static_cast<unsigned int>(m_children.size());
-		logID();
-		clog << " \t\t-> Adding new child no.  ";
-		m_children.back()->logID();
-		clog << endl;
-	}
-}
 
 void park_unit::removeChildren()
 {
-	logID();
+	printID();
 	cout << "\t\t-> deleting all children:" << endl;
 	
 	if (!m_children.empty())
@@ -281,21 +237,21 @@ void park_unit::removeChildren()
 
 void park_unit::removeChildUnit()
 {
-	logID();
-	cout << "\t\t-> deleting child no.  ";
-	m_children.back()->logID();
+	printID();
+	cout << "\t\t-> deleting LAST child no.  ";
+	m_children.back()->printID();
 	cout << endl;
 	
 	delete &(m_children.back());
 	m_children.pop_back();
 }
 
-void park_unit::removeChildUnit(unsigned int childID)
+void park_unit::removeChildUnit(unsigned childID)
 {
-	logID();
-	assert(childID >= 0 && childID < static_cast<unsigned int>(m_children.size()));
-	cout << "\t\t-> deleting child no.  ";
-	m_children[childID]->logID();
+	printID();
+	assert(childID >= 0 && childID < static_cast<unsigned>(m_children.size()));
+	cout << "\t\t-> deleting CHOSEN child no.  ";
+	m_children[childID]->printID();
 	cout << endl;
 
 	delete &(m_children.back());
@@ -303,21 +259,22 @@ void park_unit::removeChildUnit(unsigned int childID)
 }
 
 
-void park_unit::placeTaken()
+void park_unit::placeTaken(car* newcar)
 {
-	isTaken = true;
+	m_isTaken = true;
+	m_parkedCar = newcar;
+	countFree(-1);
 }
 
 void park_unit::placeFreed()
 {
-	isTaken = false;
-	//if (m_parent) m_parent->takenPlacesCounter--;
+	m_isTaken = false;
+	delete m_parkedCar;
+	m_parkedCar = nullptr;
+	countFree();
 }
 
-//void park_unit::removeChildUnit(int childID)
-//{
-//	delete &(m_children[childID]);
-//}
+
 void park_unit::getDataFromFiles() {
 			string str;
 		ifstream file0("TreeStructure.txt");
@@ -327,9 +284,19 @@ void park_unit::getDataFromFiles() {
 		
 }
 
+car * park_unit::getCar()
+{
+	return m_parkedCar;
+}
+
 unsigned park_unit::getChildID()
 {
 	return m_childID;
+}
+
+bool park_unit::isTaken()
+{
+	return m_isTaken;
 }
 
 park_unit * park_unit::getChild(int i)

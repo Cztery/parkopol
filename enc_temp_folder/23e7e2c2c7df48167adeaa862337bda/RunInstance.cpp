@@ -66,9 +66,6 @@ void RunInstance::clientMenu()
 		if (choice == 3) break;
 		placeTemp->placeFreed();
 		cout << "Place freed, parking left\n\n";
-
-		cin.get(); cin.get();
-		system("cls");
 		
 
 	default:
